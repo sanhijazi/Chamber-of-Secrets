@@ -4,8 +4,20 @@ import CSVFILE from "./dataset/co-emissions-per-capita.csv";
 import styled from "styled-components";
 import VerticalBarChart from "./VerticalBarChart";
 import HorizontalBarChart from "./HorizontalBarChart";
+import { Dropdown } from "semantic-ui-react";
+import "./style.css";
 
 function App() {
+  const yesrs = [];
+
+  for (let year = 1880; year <= 2025; year++) {
+    yesrs.push({
+      key: year.toString(),
+      value: year.toString(),
+      text: year.toString(),
+    });
+  }
+
   const [data, setData] = useState([]);
   const [year, setYear] = useState("1990");
 
@@ -38,12 +50,19 @@ function App() {
       });
   }, [year]);
 
+  const handleDropdownChange = (e, { value }) => {
+    setYear(value); // Update state with the selected year
+    console.log(value); // Log the selected year
+  };
   return (
     <Container>
-      <input
-        onChange={(e) => setYear(e.target.value.toString())}
-        value={year}
-        type="number"
+      <Dropdown
+        placeholder="Select Year"
+        fluid
+        search
+        selection
+        onChange={handleDropdownChange} // Pass the handler here
+        options={yesrs}
       />
       <VerticalBarChart
         data={data}

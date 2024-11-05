@@ -12,8 +12,8 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
       .append("div")
       .style("position", "absolute")
       .style("background", "#f9f9f9")
-      .style("padding", "5px")
-      .style("border-radius", "3px")
+      .style("padding", "10px")
+      .style("border-radius", "2px")
       .style("visibility", "hidden")
       .text("");
 

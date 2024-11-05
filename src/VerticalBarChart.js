@@ -13,7 +13,7 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
       .append("div")
       .style("position", "absolute")
       .style("background", "#f9f9f9")
-      .style("padding", "5px")
+      .style("padding", "10px")
       .style("border-radius", "3px")
       .style("visibility", "hidden")
       .text("");
