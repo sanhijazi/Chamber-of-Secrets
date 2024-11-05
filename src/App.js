@@ -1,25 +1,67 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Papa from "papaparse";
+import CSVFILE from "./dataset/co-emissions-per-capita.csv";
+import styled from "styled-components";
+import VerticalBarChart from "./VerticalBarChart";
+import HorizontalBarChart from "./HorizontalBarChart";
 
 function App() {
+  const [data, setData] = useState([]);
+  const selectedYear = "1990";
+
+  const margin = { top: 0, right: 0, bottom: 150, left: 100 };
+  const width = 800;
+  const height = 300;
+
+  useEffect(() => {
+    fetch(CSVFILE)
+      .then((response) => response.text())
+      .then((text) => {
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (result) => {
+            const filteredData = result.data
+              .filter((d) => d.Year === selectedYear)
+              .map((d) => ({
+                name: d.Entity,
+                value: +d["Annual CO₂ emissions (per capita)"],
+              }))
+              .sort((a, b) => b.value - a.value)
+              .slice(0, 10);
+            setData(filteredData);
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching the CSV file:", error);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <VerticalBarChart
+        data={data}
+        width={width}
+        height={height}
+        margin={margin}
+      />
+      <HorizontalBarChart
+        data={data}
+        width={width}
+        height={height}
+        margin={margin}
+      />
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 100px;
+`;
 
 export default App;
