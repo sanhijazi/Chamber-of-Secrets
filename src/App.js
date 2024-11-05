@@ -7,7 +7,7 @@ import HorizontalBarChart from "./HorizontalBarChart";
 
 function App() {
   const [data, setData] = useState([]);
-  const selectedYear = "1990";
+  const [year, setYear] = useState("1990");
 
   const margin = { top: 0, right: 0, bottom: 150, left: 100 };
   const width = 800;
@@ -22,7 +22,7 @@ function App() {
           skipEmptyLines: true,
           complete: (result) => {
             const filteredData = result.data
-              .filter((d) => d.Year === selectedYear)
+              .filter((d) => d.Year === year)
               .map((d) => ({
                 name: d.Entity,
                 value: +d["Annual CO₂ emissions (per capita)"],
@@ -36,10 +36,15 @@ function App() {
       .catch((error) => {
         console.error("Error fetching the CSV file:", error);
       });
-  }, []);
+  }, [year]);
 
   return (
     <Container>
+      <input
+        onChange={(e) => setYear(e.target.value.toString())}
+        value={year}
+        type="number"
+      />
       <VerticalBarChart
         data={data}
         width={width}

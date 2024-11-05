@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 const HorizontalBarChart = ({ data, width, height, margin }) => {
   const svgRef = useRef();
-
   useEffect(() => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
@@ -32,17 +31,39 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
     svg
       .selectAll(".bar")
       .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", 0)
-      .attr("y", (d) => yScale(d.name))
-      .attr("width", (d) => xScale(d.value))
-      .attr("height", yScale.bandwidth())
-      .attr("fill", "orange")
-      .attr("transform", `translate(${margin.left}, 0)`)
+      .join(
+        (enter) =>
+          enter
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", 0)
+            .attr("y", (d) => yScale(d.name))
+            .attr("width", 0) // Start with width 0 for animation
+            .attr("fill", "orange")
+            .attr("transform", `translate(${margin.left}, 0)`)
+            .attr("height", yScale.bandwidth())
+            .call(
+              (enter) =>
+                enter
+                  .transition()
+                  .duration(750)
+                  .attr("width", (d) => xScale(d.value)) // Animate to final width
+            ),
+        (update) =>
+          update.call((update) =>
+            update
+              .transition()
+              .duration(750)
+              .attr("y", (d) => yScale(d.name))
+              .attr("width", (d) => xScale(d.value)) // Smooth width update
+              .attr("height", yScale.bandwidth())
+          ),
+        (exit) => exit.remove()
+      )
       .on("mouseover", (event, d) => {
         tooltip.style("visibility", "visible").text(`Value: ${d.value}`);
+        svg.selectAll(".bar").style("fill", "#cbcbcb"); // Set other bars to gray
+        d3.select(event.currentTarget).style("fill", "orange"); // Highlight hovered bar
       })
       .on("mousemove", (event) => {
         tooltip
@@ -51,8 +72,8 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
       })
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
+        svg.selectAll(".bar").style("fill", "orange"); // Reset all bars to orange
       });
-
     svg
       .append("g")
       .attr("transform", `translate(${margin.left}, ${height})`)

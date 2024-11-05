@@ -32,17 +32,39 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
     svg
       .selectAll(".bar")
       .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", (d) => xScale(d.name))
-      .attr("y", (d) => yScale(d.value))
-      .attr("width", xScale.bandwidth())
-      .attr("height", (d) => height - yScale(d.value))
-      .attr("transform", `translate(${margin.left}, 10)`)
-      .attr("fill", "steelblue")
+      .join(
+        (enter) =>
+          enter
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", (d) => xScale(d.name))
+            .attr("y", height) // Start from the bottom for animation effect
+            .attr("width", xScale.bandwidth())
+            .attr("height", 0) // Start with height 0 for animation
+            .attr("fill", "steelblue")
+            .attr("transform", `translate(${margin.left}, 10)`)
+            .call((enter) =>
+              enter
+                .transition()
+                .duration(750)
+                .attr("y", (d) => yScale(d.value))
+                .attr("height", (d) => height - yScale(d.value))
+            ),
+        (update) =>
+          update.call((update) =>
+            update
+              .transition()
+              .duration(750)
+              .attr("y", (d) => yScale(d.value))
+              .attr("height", (d) => height - yScale(d.value))
+              .attr("width", xScale.bandwidth())
+          ),
+        (exit) => exit.remove()
+      )
       .on("mouseover", (event, d) => {
         tooltip.style("visibility", "visible").text(`Value: ${d.value}`);
+        svg.selectAll(".bar").style("fill", "#cbcbcb"); // Set all bars to gray
+        d3.select(event.currentTarget).style("fill", "steelblue"); // Highlight hovered bar
       })
       .on("mousemove", (event) => {
         tooltip
@@ -51,6 +73,7 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
       })
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
+        svg.selectAll(".bar").style("fill", "steelblue"); // Reset all bars to blue
       });
 
     svg
