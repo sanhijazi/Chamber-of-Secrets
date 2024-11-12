@@ -6,14 +6,14 @@ import CSVFILE3 from "./dataset/DataSetWithRegion.csv";
 import styled from "styled-components";
 import VerticalBarChart from "./VerticalBarChart";
 import HorizontalBarChart from "./HorizontalBarChart";
-import StackedBarChart from "./StackedBarChart"; // Import the new StackedBarChart component
-import Heatmap from "./heatMap"; // Assuming you have this component ready
+import StackedBarChart from "./StackedBarChart";
+import Heatmap from "./heatMap";
 import StackedBarChartSmallMultiples from "./StackedBarChartSmallMultiples";
 import PercentegeStacked from "./PercentegeStacked";
 
 function App() {
   const [barChartData, setBarChartData] = useState([]);
-  const [stackedChartData, setStackedChartData] = useState([]); // For stacked chart data
+  const [stackedChartData, setStackedChartData] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
   const [year, setYear] = useState("1990");
 
@@ -22,7 +22,6 @@ function App() {
   const height = 300;
 
   useEffect(() => {
-    // Load data for the bar charts
     fetch(CSVFILE1)
       .then((response) => response.text())
       .then((text) => {
@@ -30,15 +29,7 @@ function App() {
           header: true,
           skipEmptyLines: true,
           complete: (result) => {
-            const filteredData = result.data
-              .filter((d) => d.Year === year)
-              .map((d) => ({
-                name: d.Entity,
-                value: +d["Annual CO₂ emissions (per capita)"],
-              }))
-              .sort((a, b) => b.value - a.value)
-              .slice(0, 10);
-            setBarChartData(filteredData);
+            setBarChartData(result.data);
           },
         });
       })
@@ -94,23 +85,23 @@ function App() {
 
   return (
     <Container>
-      <input
-        onChange={(e) => setYear(e.target.value.toString())}
-        value={year}
-        type="number"
-      />
-      <VerticalBarChart
-        data={barChartData}
-        width={width}
-        height={height}
-        margin={margin}
-      />
-      <HorizontalBarChart
-        data={barChartData}
-        width={width}
-        height={height}
-        margin={margin}
-      />
+      <Header>Chamber fo Secrets - Data Visualisation</Header>
+      {barChartData && (
+        <VerticalBarChart
+          data={barChartData}
+          width={width}
+          height={height}
+          margin={margin}
+        />
+      )}
+      {barChartData && (
+        <HorizontalBarChart
+          data={barChartData}
+          width={width}
+          height={height}
+          margin={margin}
+        />
+      )}
       {stackedChartData.length > 0 && (
         <StackedBarChart
           data={stackedChartData}
@@ -150,7 +141,21 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  background-color: white;
   gap: 100px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: bold;
+  background-color: #7494f4;
+  padding: 20px;
+  height: 100px;
+  width: 100%;
+  color: white;
 `;
 
 export default App;

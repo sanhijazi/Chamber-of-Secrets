@@ -7,10 +7,20 @@ import {
   stack,
   axisBottom,
   axisLeft,
-  max,
 } from "d3";
+import { Dropdown } from "semantic-ui-react";
+import styled from "styled-components";
 
-const PercentegeStacked = ({
+const regions = [
+  { key: "Asia", text: "Asia", value: "Asia" },
+  { key: "Europe", text: "Europe", value: "Europe" },
+  { key: "Africa", text: "Africa", value: "Africa" },
+  { key: "North America", text: "North America", value: "North America" },
+  { key: "South America", text: "South America", value: "South America" },
+  { key: "Oceania", text: "Oceania", value: "Oceania" },
+];
+
+const PercentageStacked = ({
   data,
   width,
   height,
@@ -18,16 +28,12 @@ const PercentegeStacked = ({
 }) => {
   const svgRef = useRef();
 
-  // State for selected year and region
-  const [selectedYear, setSelectedYear] = useState("2000");
   const [selectedRegion, setSelectedRegion] = useState("Asia");
 
-  // Filter data based on selected year and region
   const filteredData = data.filter(
     (item) => item.region === selectedRegion && item.region !== "UNKNOWN"
   );
 
-  // Group data by year, sort and select the top 5 countries, adding "Other"
   const groupedByYear = ["2000", "2001", "2002"].map((year) => {
     const countriesForYear = filteredData
       .filter((item) => item.Year === year)
@@ -52,7 +58,6 @@ const PercentegeStacked = ({
     };
   });
 
-  // Format data for 100% stacked bar chart by normalizing emissions to sum to 100
   const processedData = groupedByYear.map((yearData) => {
     const year = yearData.year;
     const emissions = { year };
@@ -73,7 +78,6 @@ const PercentegeStacked = ({
     return emissions;
   });
 
-  // Get unique country names, including "Other"
   const countryKeys = Array.from(
     new Set(
       processedData.flatMap((d) =>
@@ -82,7 +86,6 @@ const PercentegeStacked = ({
     )
   );
 
-  // Scales
   const xScale = scaleLinear()
     .domain([0, 100])
     .range([margin.left, width - margin.right]);
@@ -167,35 +170,70 @@ const PercentegeStacked = ({
       .attr("width", (d) => xScale(d[1]) - xScale(d[0]));
   }, [layers, xScale, yScale, colorScale]);
 
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
-
-  const handleRegionChange = (event) => {
-    setSelectedRegion(event.target.value);
+  const handleRegionChange = (event, { value }) => {
+    setSelectedRegion(value);
   };
 
   return (
-    <div>
-      <div>
-        <label>
-          Select Region:
-          <select value={selectedRegion} onChange={handleRegionChange}>
-            <option value="Asia">Asia</option>
-            <option value="Europe">Europe</option>
-            <option value="Africa">Africa</option>
-            <option value="North America">North America</option>
-            <option value="South America">South America</option>
-            <option value="Oceania">Oceania</option>
-          </select>
-        </label>
-      </div>
-      <svg width={width} height={height} ref={svgRef}>
-        <g className="x-axis" />
-        <g className="y-axis" />
-      </svg>
-    </div>
+    <Container>
+      <Flex>
+        <Text>Percentege Stached Bar Chart - CO2 emissions</Text>
+        <svg width={width} height={height} ref={svgRef}>
+          <g className="x-axis" />
+          <g className="y-axis" />
+        </svg>
+      </Flex>
+      <LeftContainer>
+        <Text>Select Region</Text>
+        <Dropdown
+          placeholder="Select Region"
+          fluid
+          selection
+          options={regions}
+          onChange={handleRegionChange}
+          value={selectedRegion}
+        />
+      </LeftContainer>
+    </Container>
   );
 };
 
-export default PercentegeStacked;
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 140px 200px;
+  background: #fff;
+  align-items: center;
+  box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);
+  width: 100%;
+`;
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 30px;
+  height: 140px;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0px 0px 9.7px 0px rgba(0, 0, 0, 0.25);
+`;
+const Text = styled.div`
+  color: #000;
+  font-family: Roboto;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
+
+export default PercentageStacked;

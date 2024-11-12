@@ -9,6 +9,22 @@ import {
   axisLeft,
   max,
 } from "d3";
+import { Dropdown } from "semantic-ui-react";
+import styled from "styled-components";
+
+const regions = [
+  { key: "Europe", text: "Europe", value: "Europe" },
+  { key: "Africa", text: "Africa", value: "Africa" },
+  { key: "North America", text: "North America", value: "North America" },
+  { key: "South America", text: "South America", value: "South America" },
+  { key: "Oceania", text: "Oceania", value: "Oceania" },
+];
+
+const years = [
+  { key: "2000", text: "2000", value: "2000" },
+  { key: "2001", text: "2001", value: "2001" },
+  { key: "2002", text: "2002", value: "2002" },
+];
 
 const StackedBarChart = ({
   data,
@@ -18,16 +34,13 @@ const StackedBarChart = ({
 }) => {
   const svgRef = useRef();
 
-  // State for selected year and region
   const [selectedYear, setSelectedYear] = useState("2000");
   const [selectedRegion, setSelectedRegion] = useState("Asia");
 
-  // Filter data based on selected year and region
   const filteredData = data.filter(
     (item) => item.region === selectedRegion && item.region !== "UNKNOWN"
   );
 
-  // Group data by year, then sort and select the top 5 countries for each year, adding "Other"
   const groupedByYear = ["2000", "2001", "2002"].map((year) => {
     const countriesForYear = filteredData
       .filter((item) => item.Year === year)
@@ -52,7 +65,6 @@ const StackedBarChart = ({
     };
   });
 
-  // Format data for stacked bar chart
   const processedData = groupedByYear.map((yearData) => {
     const year = yearData.year;
     const emissions = { year };
@@ -65,7 +77,6 @@ const StackedBarChart = ({
     return emissions;
   });
 
-  // Get unique country names, including "Other," for consistent keys across years
   const countryKeys = Array.from(
     new Set(
       processedData.flatMap((d) =>
@@ -74,7 +85,6 @@ const StackedBarChart = ({
     )
   );
 
-  // Scales
   const xScale = scaleLinear()
     .domain([
       0,
@@ -122,17 +132,16 @@ const StackedBarChart = ({
       .select(".x-axis")
       .attr("transform", `translate(0,${height - margin.bottom})`)
       .transition()
-      .duration(1000) // Apply transition duration
+      .duration(1000)
       .call(axisBottom(xScale));
 
     svg
       .select(".y-axis")
       .attr("transform", `translate(${margin.left},0)`)
       .transition()
-      .duration(1000) // Apply transition duration
+      .duration(1000)
       .call(axisLeft(yScale));
 
-    // Select all layers (stacked bars) and apply transition for smooth update
     svg
       .selectAll(".layer")
       .data(layers)
@@ -160,42 +169,74 @@ const StackedBarChart = ({
           .style("left", `${event.pageX + 10}px`);
       })
       .on("mouseout", () => tooltip.style("display", "none"))
-      .transition() // Apply transition to the bars for smooth update
+      .transition()
       .duration(1000)
       .attr("x", (d) => xScale(d[0]))
       .attr("width", (d) => xScale(d[1]) - xScale(d[0]));
   }, [layers, xScale, yScale, colorScale]);
 
-  // Dropdown change handlers
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
-
-  const handleRegionChange = (event) => {
-    setSelectedRegion(event.target.value);
-  };
+  const handleRegionChange = (e, { value }) => setSelectedRegion(value);
 
   return (
-    <div>
-      <div>
-        <label>
-          Select Region:
-          <select value={selectedRegion} onChange={handleRegionChange}>
-            <option value="Asia">Asia</option>
-            <option value="Europe">Europe</option>
-            <option value="Africa">Africa</option>
-            <option value="North America">North America</option>
-            <option value="South America">South America</option>
-            <option value="Oceania">Oceania</option>
-          </select>
-        </label>
-      </div>
-      <svg width={width} height={height} ref={svgRef}>
-        <g className="x-axis" />
-        <g className="y-axis" />
-      </svg>
-    </div>
+    <Container>
+      <Flex>
+        <Text>Stached Bar Chart - CO2 emissions</Text>
+        <svg width={width} height={height} ref={svgRef}>
+          <g className="x-axis" />
+          <g className="y-axis" />
+        </svg>
+      </Flex>
+      <LeftContainer>
+        <Text>Select Region</Text>
+        <Dropdown
+          placeholder="Select Region"
+          fluid
+          selection
+          options={regions}
+          onChange={handleRegionChange}
+          value={selectedRegion}
+        />
+      </LeftContainer>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 140px 200px;
+  background: #fff;
+  align-items: center;
+  box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);
+  width: 100%;
+`;
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 30px;
+  height: 140px;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0px 0px 9.7px 0px rgba(0, 0, 0, 0.25);
+`;
+const Text = styled.div`
+  color: #000;
+  font-family: Roboto;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
 
 export default StackedBarChart;

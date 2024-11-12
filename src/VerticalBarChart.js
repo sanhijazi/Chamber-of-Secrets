@@ -1,10 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { Input } from "semantic-ui-react";
 import * as d3 from "d3";
 
 const VerticalBarChart = ({ data, width, height, margin }) => {
   const svgRef = useRef();
+  const [year, setYear] = useState("1950");
 
   useEffect(() => {
+    data = data
+      .filter((d) => d.Year === year)
+      .map((d) => ({
+        name: d.Entity,
+        value: +d["Annual CO₂ emissions (per capita)"],
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
@@ -90,16 +102,67 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
       .append("g")
       .attr("transform", `translate(${margin.left}, 10)`)
       .call(d3.axisLeft(yScale));
-  }, [data]);
+  }, [year, data]);
 
   return (
-    <svg
-      ref={svgRef}
-      width={width + margin.left + margin.right}
-      height={height + margin.top + margin.bottom}
-      style={{ overflow: "visible" }}
-    ></svg>
+    <Container>
+      <Flex>
+        <Text>BarChart - CO2 emissions</Text>
+        <svg
+          ref={svgRef}
+          width={width + margin.left + margin.right}
+          height={height + margin.top + margin.bottom}
+          style={{ overflow: "visible" }}
+        ></svg>
+      </Flex>
+      <LeftContainer>
+        <Text>Select Year</Text>
+        <Input
+          placeholder="Year"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          type="number"
+        />
+      </LeftContainer>
+    </Container>
   );
 };
 
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 140px 200px;
+  background: #fff;
+  align-items: center;
+  box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);
+  width: 100%;
+`;
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 30px;
+  height: 140px;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0px 0px 9.7px 0px rgba(0, 0, 0, 0.25);
+`;
+const Text = styled.div`
+  color: #000;
+  font-family: Roboto;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
 export default VerticalBarChart;

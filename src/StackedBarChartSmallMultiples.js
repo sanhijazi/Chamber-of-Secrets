@@ -9,6 +9,17 @@ import {
   axisLeft,
   max,
 } from "d3";
+import { Dropdown } from "semantic-ui-react";
+import styled from "styled-components";
+
+const regions = [
+  { key: "Asia", text: "Asia", value: "Asia" },
+  { key: "Europe", text: "Europe", value: "Europe" },
+  { key: "Africa", text: "Africa", value: "Africa" },
+  { key: "North America", text: "North America", value: "North America" },
+  { key: "South America", text: "South America", value: "South America" },
+  { key: "Oceania", text: "Oceania", value: "Oceania" },
+];
 
 const StackedBarChartSmallMultiples = ({
   data,
@@ -17,7 +28,6 @@ const StackedBarChartSmallMultiples = ({
   margin = { top: 20, right: 20, bottom: 30, left: 40 },
 }) => {
   const svgRef = useRef();
-
   const [selectedRegion, setSelectedRegion] = useState("Asia");
 
   const filteredData = data.filter(
@@ -100,8 +110,7 @@ const StackedBarChartSmallMultiples = ({
 
   useEffect(() => {
     const svg = select(svgRef.current);
-
-    svg.selectAll("*").remove(); // Clear previous renders
+    svg.selectAll("*").remove();
 
     const tooltip = select("body")
       .append("div")
@@ -162,7 +171,7 @@ const StackedBarChartSmallMultiples = ({
         .attr("height", yScaleSmall.bandwidth())
         .attr("width", (d) => xScaleSmall(d[1]) - xScaleSmall(d[0]))
         .on("mouseover", (event, d) => {
-          const country = layers.find((layer) => layer.indexOf(d) !== -1)?.key;
+          const country = layers.find((layer) => layer.includes(d))?.key;
           const emissionsValue = (d[1] - d[0]).toFixed(2);
 
           tooltip
@@ -178,26 +187,68 @@ const StackedBarChartSmallMultiples = ({
     });
   }, [layers, xScale, yScale, colorScale, groupedByYear, selectedRegion]);
 
-  const handleRegionChange = (event) => {
-    setSelectedRegion(event.target.value);
+  const handleRegionChange = (event, { value }) => {
+    setSelectedRegion(value);
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <label>
-        Select Region:
-        <select value={selectedRegion} onChange={handleRegionChange}>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Africa">Africa</option>
-          <option value="North America">North America</option>
-          <option value="South America">South America</option>
-          <option value="Oceania">Oceania</option>
-        </select>
-      </label>
-      <svg width={width} height={height} ref={svgRef}></svg>
-    </div>
+    <Container>
+      <Flex>
+        <Text>Small Multiples - CO₂ Emissions</Text>
+        <svg width={width} height={height} ref={svgRef}></svg>
+      </Flex>
+      <LeftContainer>
+        <Text>Select Region</Text>
+        <Dropdown
+          placeholder="Select Region"
+          fluid
+          selection
+          options={regions}
+          onChange={handleRegionChange}
+          value={selectedRegion}
+        />
+      </LeftContainer>
+    </Container>
   );
 };
+
+// Styled components
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 140px 200px;
+  background: #fff;
+  align-items: center;
+  box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);
+  width: 100%;
+`;
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 30px;
+  height: 140px;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0px 0px 9.7px 0px rgba(0, 0, 0, 0.25);
+`;
+const Text = styled.div`
+  color: #000;
+  font-family: Roboto;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
 
 export default StackedBarChartSmallMultiples;
