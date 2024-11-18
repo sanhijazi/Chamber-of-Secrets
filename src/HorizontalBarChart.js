@@ -51,7 +51,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
             .attr("class", "bar")
             .attr("x", 0)
             .attr("y", (d) => yScale(d.name))
-            .attr("width", 0) // Start with width 0 for animation
+            .attr("width", 0)
             .attr("fill", "orange")
             .attr("transform", `translate(${margin.left}, 0)`)
             .attr("height", yScale.bandwidth())
@@ -60,7 +60,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
                 enter
                   .transition()
                   .duration(750)
-                  .attr("width", (d) => xScale(d.value)) // Animate to final width
+                  .attr("width", (d) => xScale(d.value))
             ),
         (update) =>
           update.call((update) =>
@@ -68,15 +68,15 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
               .transition()
               .duration(750)
               .attr("y", (d) => yScale(d.name))
-              .attr("width", (d) => xScale(d.value)) // Smooth width update
+              .attr("width", (d) => xScale(d.value))
               .attr("height", yScale.bandwidth())
           ),
         (exit) => exit.remove()
       )
       .on("mouseover", (event, d) => {
         tooltip.style("visibility", "visible").text(`Value: ${d.value}`);
-        svg.selectAll(".bar").style("fill", "#cbcbcb"); // Set other bars to gray
-        d3.select(event.currentTarget).style("fill", "orange"); // Highlight hovered bar
+        svg.selectAll(".bar").style("fill", "#cbcbcb");
+        d3.select(event.currentTarget).style("fill", "orange");
       })
       .on("mousemove", (event) => {
         tooltip
@@ -85,7 +85,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
       })
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
-        svg.selectAll(".bar").style("fill", "orange"); // Reset all bars to orange
+        svg.selectAll(".bar").style("fill", "orange");
       });
     svg
       .append("g")

@@ -170,8 +170,8 @@ const StackedBarChartSmallMultiples = ({
       <Flex>
         <Text>Small Multiples - CO₂ emissions (per capita)</Text>
         <svg width={width} style={{ 
-        overflow: "visible",  // Make overflow visible
-        display: "block"      // Ensure proper positioning
+        overflow: "visible", 
+        display: "block" 
       }} height={height} ref={svgRef}></svg>
       </Flex>
       <LeftContainer>
@@ -198,7 +198,6 @@ const StackedBarChartSmallMultiples = ({
   );
 };
 
-// Styled components
 const Container = styled.div`
   display: flex;
   justify-content: center;

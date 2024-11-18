@@ -56,22 +56,18 @@ const StackedBarChart = ({
   };
 
   const groupedByYear = getDecadeYears(selectedDecade).map((year) => {
-    // First, get all countries for this year and calculate their total emissions
     const countriesForYear = filteredData
       .filter((item) => item.Year === year)
       .map(item => ({
         Entity: item.Entity,
         emissions: parseFloat(item["Annual CO₂ emissions (per capita)"] || 0)
       }))
-      .filter(item => !isNaN(item.emissions)); // Filter out any invalid emissions
+      .filter(item => !isNaN(item.emissions));
 
-    // Sort by emissions in descending order
     const sortedCountries = countriesForYear.sort((a, b) => b.emissions - a.emissions);
 
-    // Take top 5 countries
     const topCountries = sortedCountries.slice(0, 5);
 
-    // Sum up all other countries' emissions
     const otherEmissions = sortedCountries
       .slice(5)
       .reduce((sum, item) => sum + item.emissions, 0);
@@ -86,17 +82,14 @@ const StackedBarChart = ({
   const processedData = groupedByYear.map((yearData) => {
     const emissions = { year: yearData.year };
     
-    // Add top 5 countries
     yearData.countries.forEach((country) => {
       emissions[country.Entity] = country.emissions;
     });
     
-    // Add "Other"
     emissions["Other"] = yearData.other.emissions;
     return emissions;
   });
 
-  // Get the consistent top 5 countries across all years
   const countryKeys = Array.from(
     new Set(
       processedData.flatMap((d) =>
@@ -104,13 +97,11 @@ const StackedBarChart = ({
       )
     )
   ).slice(0, 5).sort((a, b) => {
-    // Sort by total emissions across all years
     const aTotal = processedData.reduce((sum, d) => sum + (d[a] || 0), 0);
     const bTotal = processedData.reduce((sum, d) => sum + (d[b] || 0), 0);
     return bTotal - aTotal;
   });
 
-  // Add "Other" at the end
   countryKeys.push("Other");
 
   const xScale = scaleLinear()

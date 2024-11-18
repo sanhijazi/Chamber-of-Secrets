@@ -56,7 +56,6 @@ function App() {
   }, [year]);
 
   useEffect(() => {
-    // Load data for the heatmap
     fetch(CSVFILE2)
       .then((response) => response.text())
       .then((text) => {

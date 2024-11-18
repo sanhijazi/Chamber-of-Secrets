@@ -6,7 +6,6 @@ import { Dropdown } from "semantic-ui-react";
 function Heatmap({ data, width, height, margin }) {
   const svgRef = useRef();
 
-  // Add state for selected decade
   const [selectedDecade, setSelectedDecade] = useState("2000");
 
 const decades = [
@@ -25,7 +24,6 @@ const decades = [
     { key: "2020s", text: "2020-2029", value: "2020" },
   ];
 
-  // Update processedData to filter by decade
   const processedData = useMemo(() => {
     if (!data || !data.length) return [];
     
@@ -51,7 +49,6 @@ const decades = [
       }));
   }, [data, selectedDecade]);
 
-  // Get latest year data for each country
   const latestData = useMemo(() => {
     const dataByCountry = {};
     processedData.forEach(d => {
@@ -62,7 +59,6 @@ const decades = [
     return Object.values(dataByCountry);
   }, [processedData]);
 
-  // Get top 10 countries by total emissions
   const topCountries = useMemo(() => {
     return latestData
       .sort((a, b) => 
@@ -82,23 +78,19 @@ const decades = [
       return;
     }
 
-    // Adjust height calculation based on fewer countries
-    const adjustedHeight = height * (10/20); // Scale height proportionally
+    const adjustedHeight = height * (10/20);
 
-    // Clear previous content
     const svgElement = d3.select(svgRef.current);
     svgElement.selectAll("*").remove();
 
     const svg = svgElement
       .attr("width", width + margin.left + margin.right)
-      .attr("height", adjustedHeight + margin.top + margin.bottom) // Use adjusted height
+      .attr("height", adjustedHeight + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Define emission types
     const emissionTypes = ["Fossil Emissions", "Land-Use Emissions"];
 
-    // Create scales
     const xScale = d3.scaleBand()
       .domain(emissionTypes)
       .range([0, width])
@@ -106,10 +98,9 @@ const decades = [
 
     const yScale = d3.scaleBand()
       .domain(topCountries.map(d => d.name))
-      .range([0, adjustedHeight]) // Use adjusted height
+      .range([0, adjustedHeight])
       .padding(0.1);
 
-    // Calculate max emission for color scale
     const maxEmission = d3.max(topCountries, d => 
       Math.max(d.fossilEmissions, d.landUseEmissions)
     );
@@ -128,9 +119,7 @@ const decades = [
       .interpolator(d3.interpolateViridis)
       .domain([0, maxEmission]);
 
-    // Add rectangles
     topCountries.forEach(d => {
-      // Fossil Emissions
       svg.append("rect")
         .attr("x", xScale("Fossil Emissions"))
         .attr("y", yScale(d.name))
@@ -139,7 +128,6 @@ const decades = [
         .attr("fill", colorScale(d.fossilEmissions))
         .attr("opacity", 0.8);
 
-      // Land-Use Emissions
       svg.append("rect")
         .attr("x", xScale("Land-Use Emissions"))
         .attr("y", yScale(d.name))
@@ -149,23 +137,21 @@ const decades = [
         .attr("opacity", 0.8);
     });
 
-    // Add axes
     svg.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0,${adjustedHeight})`) // Use adjusted height
+      .attr("transform", `translate(0,${adjustedHeight})`)
       .call(d3.axisBottom(xScale));
 
     svg.append("g")
       .attr("class", "y-axis")
       .call(d3.axisLeft(yScale));
 
-    // Add color legend
     const legendHeight = 200;
     const legendWidth = 40;
     const legendMargin = 20;
 
     const legendScale = d3.scaleLinear()
-      .domain([maxEmission, 0])  // Reversed domain to show high values at top
+      .domain([maxEmission, 0]) 
       .range([0, legendHeight]);
 
     const legendAxis = d3.axisRight()
@@ -177,7 +163,6 @@ const decades = [
       .attr("class", "legend")
       .attr("transform", `translate(${width + legendMargin}, 0)`);
 
-    // Create gradient definition
     const defs = svg.append("defs");
     const gradient = defs.append("linearGradient")
       .attr("id", "legend-gradient")
@@ -186,7 +171,6 @@ const decades = [
       .attr("x2", "0%")
       .attr("y2", "0%");
 
-    // Add color stops
     const numStops = 10;
     for (let i = 0; i < numStops; i++) {
       const offset = (i / (numStops - 1)) * 100;
@@ -196,18 +180,15 @@ const decades = [
         .attr("stop-color", colorScale(value));
     }
 
-    // Add gradient rectangle
     legend.append("rect")
       .attr("width", legendWidth)
       .attr("height", legendHeight)
       .style("fill", "url(#legend-gradient)");
 
-    // Add legend axis
     legend.append("g")
       .attr("transform", `translate(${legendWidth}, 0)`)
       .call(legendAxis);
 
-    // Add legend title
     legend.append("text")
       .attr("transform", `translate(${legendWidth / 2}, ${legendHeight + 40})`)
       .style("text-anchor", "middle")
@@ -223,7 +204,7 @@ const decades = [
           placeholder="Select Decade"
           fluid
           selection
-          options={decades} // Use the same decades array from StackedBarChart
+          options={decades}
           onChange={(e, { value }) => setSelectedDecade(value)}
           value={selectedDecade}
         />
