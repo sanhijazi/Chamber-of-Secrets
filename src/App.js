@@ -74,7 +74,7 @@ function App() {
               }))
               .sort((a, b) => b.fossilEmissions - a.fossilEmissions)
               .slice(0, 10);
-            setHeatmapData(filteredData);
+            setHeatmapData(result.data);
           },
         });
       })
