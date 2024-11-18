@@ -20,6 +20,22 @@ const regions = [
   { key: "Oceania", text: "Oceania", value: "Oceania" },
 ];
 
+const decades = [
+  { key: "1900s", text: "1900-1909", value: "1900" },
+  { key: "1910s", text: "1910-1919", value: "1910" },
+  { key: "1920s", text: "1920-1929", value: "1920" },
+  { key: "1930s", text: "1930-1939", value: "1930" },
+  { key: "1940s", text: "1940-1949", value: "1940" },
+  { key: "1950s", text: "1950-1959", value: "1950" },
+  { key: "1960s", text: "1960-1969", value: "1960" },
+  { key: "1970s", text: "1970-1979", value: "1970" },
+  { key: "1980s", text: "1980-1989", value: "1980" },
+  { key: "1990s", text: "1990-1999", value: "1990" },
+  { key: "2000s", text: "2000-2009", value: "2000" },
+  { key: "2010s", text: "2010-2019", value: "2010" },
+  { key: "2020s", text: "2020-2029", value: "2020" },
+];
+
 const PercentageStacked = ({
   data,
   width,
@@ -28,13 +44,18 @@ const PercentageStacked = ({
 }) => {
   const svgRef = useRef();
 
+  const [selectedDecade, setSelectedDecade] = useState("2000");
   const [selectedRegion, setSelectedRegion] = useState("Asia");
 
   const filteredData = data.filter(
     (item) => item.region === selectedRegion && item.region !== "UNKNOWN"
   );
 
-  const groupedByYear = ["2000", "2001", "2002"].map((year) => {
+  const getDecadeYears = (startYear) => {
+    return Array.from({ length: 10 }, (_, i) => String(Number(startYear) + i));
+  };
+
+  const groupedByYear = getDecadeYears(selectedDecade).map((year) => {
     const countriesForYear = filteredData
       .filter((item) => item.Year === year)
       .sort(
@@ -84,7 +105,11 @@ const PercentageStacked = ({
         Object.keys(d).filter((key) => key !== "year")
       )
     )
-  );
+  ).sort((a, b) => {
+    if (a === "Other") return 1;
+    if (b === "Other") return -1;
+    return a.localeCompare(b);
+  });
 
   const xScale = scaleLinear()
     .domain([0, 100])
@@ -95,16 +120,16 @@ const PercentageStacked = ({
     .range([margin.top, height - margin.bottom])
     .padding(0.1);
 
-  const colorScale = scaleOrdinal()
+    const colorScale = scaleOrdinal()
     .domain(countryKeys)
     .range([
-      "#1f77b4",
-      "#ff7f0e",
-      "#2ca02c",
-      "#d62728",
-      "#9467bd",
-      "#8c564b",
-      "#e377c2",
+      "#2D82B7",  // Blue
+      "#42A5B3",  // Teal
+      "#63B179",  // Green
+      "#EC8F4A",  // Orange
+      "#E1575A",  // Red
+      "#A352A3",  // Purple
+      "#888888"   // Gray (for "Other")
     ]);
 
   const stackGenerator = stack().keys(countryKeys);
@@ -174,11 +199,16 @@ const PercentageStacked = ({
     setSelectedRegion(value);
   };
 
+  const handleDecadeChange = (e, { value }) => setSelectedDecade(value);
+
   return (
     <Container>
       <Flex>
-        <Text>Percentege Stached Bar Chart - CO2 emissions</Text>
-        <svg width={width} height={height} ref={svgRef}>
+        <Text>Percentage Stacked Bar Chart - CO2 emissions</Text>
+        <svg width={width} height={height} ref={svgRef} style={{ 
+          overflow: "visible",
+          display: "block"
+        }}>
           <g className="x-axis" />
           <g className="y-axis" />
         </svg>
@@ -192,6 +222,15 @@ const PercentageStacked = ({
           options={regions}
           onChange={handleRegionChange}
           value={selectedRegion}
+        />
+        <Text>Select Decade</Text>
+        <Dropdown
+          placeholder="Select Decade"
+          fluid
+          selection
+          options={decades}
+          onChange={handleDecadeChange}
+          value={selectedDecade}
         />
       </LeftContainer>
     </Container>
@@ -218,8 +257,8 @@ const LeftContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  gap: 30px;
-  height: 140px;
+  gap: 20px;
+  height: 220px;
   justify-content: center;
   align-items: center;
   width: 300px;

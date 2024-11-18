@@ -115,7 +115,7 @@ function App() {
           data={stackedChartData}
           width={width}
           height={height}
-          margin={margin}
+          margin={{ top: 20, right: 20, bottom: 20, left: 30 }}
         />
       )}
       {stackedChartData.length > 0 && (

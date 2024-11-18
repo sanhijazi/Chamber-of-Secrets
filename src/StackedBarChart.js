@@ -20,10 +20,20 @@ const regions = [
   { key: "Oceania", text: "Oceania", value: "Oceania" },
 ];
 
-const years = [
-  { key: "2000", text: "2000", value: "2000" },
-  { key: "2001", text: "2001", value: "2001" },
-  { key: "2002", text: "2002", value: "2002" },
+const decades = [
+  { key: "1900s", text: "1900-1909", value: "1900" },
+  { key: "1910s", text: "1910-1919", value: "1910" },
+  { key: "1920s", text: "1920-1929", value: "1920" },
+  { key: "1930s", text: "1930-1939", value: "1930" },
+  { key: "1940s", text: "1940-1949", value: "1940" },
+  { key: "1950s", text: "1950-1959", value: "1950" },
+  { key: "1960s", text: "1960-1969", value: "1960" },
+  { key: "1970s", text: "1970-1979", value: "1970" },
+  { key: "1980s", text: "1980-1989", value: "1980" },
+  { key: "1990s", text: "1990-1999", value: "1990" },
+  { key: "2000s", text: "2000-2009", value: "2000" },
+  { key: "2010s", text: "2010-2019", value: "2010" },
+  { key: "2020s", text: "2020-2029", value: "2020" },
 ];
 
 const StackedBarChart = ({
@@ -34,56 +44,74 @@ const StackedBarChart = ({
 }) => {
   const svgRef = useRef();
 
-  const [selectedYear, setSelectedYear] = useState("2000");
+  const [selectedDecade, setSelectedDecade] = useState("2000");
   const [selectedRegion, setSelectedRegion] = useState("Asia");
 
   const filteredData = data.filter(
     (item) => item.region === selectedRegion && item.region !== "UNKNOWN"
   );
 
-  const groupedByYear = ["2000", "2001", "2002"].map((year) => {
+  const getDecadeYears = (startYear) => {
+    return Array.from({ length: 10 }, (_, i) => String(Number(startYear) + i));
+  };
+
+  const groupedByYear = getDecadeYears(selectedDecade).map((year) => {
+    // First, get all countries for this year and calculate their total emissions
     const countriesForYear = filteredData
       .filter((item) => item.Year === year)
-      .sort(
-        (a, b) =>
-          b["Annual CO₂ emissions (per capita)"] -
-          a["Annual CO₂ emissions (per capita)"]
-      );
+      .map(item => ({
+        Entity: item.Entity,
+        emissions: parseFloat(item["Annual CO₂ emissions (per capita)"] || 0)
+      }))
+      .filter(item => !isNaN(item.emissions)); // Filter out any invalid emissions
 
-    const topCountries = countriesForYear.slice(0, 5);
-    const otherEmissions = countriesForYear
+    // Sort by emissions in descending order
+    const sortedCountries = countriesForYear.sort((a, b) => b.emissions - a.emissions);
+
+    // Take top 5 countries
+    const topCountries = sortedCountries.slice(0, 5);
+
+    // Sum up all other countries' emissions
+    const otherEmissions = sortedCountries
       .slice(5)
-      .reduce(
-        (sum, item) => sum + item["Annual CO₂ emissions (per capita)"],
-        0
-      );
+      .reduce((sum, item) => sum + item.emissions, 0);
 
     return {
       year,
       countries: topCountries,
-      other: { Entity: "Other", CO2: otherEmissions },
+      other: { Entity: "Other", emissions: otherEmissions }
     };
   });
 
   const processedData = groupedByYear.map((yearData) => {
-    const year = yearData.year;
-    const emissions = { year };
+    const emissions = { year: yearData.year };
+    
+    // Add top 5 countries
     yearData.countries.forEach((country) => {
-      emissions[country.Entity] = parseFloat(
-        country["Annual CO₂ emissions (per capita)"]
-      );
+      emissions[country.Entity] = country.emissions;
     });
-    emissions["Other"] = parseFloat(yearData.other.CO2);
+    
+    // Add "Other"
+    emissions["Other"] = yearData.other.emissions;
     return emissions;
   });
 
+  // Get the consistent top 5 countries across all years
   const countryKeys = Array.from(
     new Set(
       processedData.flatMap((d) =>
-        Object.keys(d).filter((key) => key !== "year")
+        Object.keys(d).filter((key) => key !== "year" && key !== "Other")
       )
     )
-  );
+  ).slice(0, 5).sort((a, b) => {
+    // Sort by total emissions across all years
+    const aTotal = processedData.reduce((sum, d) => sum + (d[a] || 0), 0);
+    const bTotal = processedData.reduce((sum, d) => sum + (d[b] || 0), 0);
+    return bTotal - aTotal;
+  });
+
+  // Add "Other" at the end
+  countryKeys.push("Other");
 
   const xScale = scaleLinear()
     .domain([
@@ -103,17 +131,18 @@ const StackedBarChart = ({
   const colorScale = scaleOrdinal()
     .domain(countryKeys)
     .range([
-      "#1f77b4",
-      "#ff7f0e",
-      "#2ca02c",
-      "#d62728",
-      "#9467bd",
-      "#8c564b",
-      "#e377c2",
+      "#2D82B7",  // Blue
+      "#42A5B3",  // Teal
+      "#63B179",  // Green
+      "#EC8F4A",  // Orange
+      "#E1575A",  // Red
+      "#A352A3",  // Purple
+      "#888888"   // Gray (for "Other")
     ]);
 
   const stackGenerator = stack().keys(countryKeys);
   const layers = stackGenerator(processedData);
+  console.log(layers);
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -176,11 +205,12 @@ const StackedBarChart = ({
   }, [layers, xScale, yScale, colorScale]);
 
   const handleRegionChange = (e, { value }) => setSelectedRegion(value);
+  const handleDecadeChange = (e, { value }) => setSelectedDecade(value);
 
   return (
     <Container>
       <Flex>
-        <Text>Stached Bar Chart - CO2 emissions</Text>
+        <Text>Stacked Bar Chart - CO2 emissions</Text>
         <svg width={width} height={height} ref={svgRef}>
           <g className="x-axis" />
           <g className="y-axis" />
@@ -195,6 +225,15 @@ const StackedBarChart = ({
           options={regions}
           onChange={handleRegionChange}
           value={selectedRegion}
+        />
+        <Text>Select Decade</Text>
+        <Dropdown
+          placeholder="Select Decade"
+          fluid
+          selection
+          options={decades}
+          onChange={handleDecadeChange}
+          value={selectedDecade}
         />
       </LeftContainer>
     </Container>
@@ -221,8 +260,8 @@ const LeftContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  gap: 30px;
-  height: 140px;
+  gap: 20px;
+  height: 220px;
   justify-content: center;
   align-items: center;
   width: 300px;
