@@ -210,7 +210,7 @@ const StackedBarChart = ({
   return (
     <Container>
       <Flex>
-        <Text>Stacked Bar Chart - CO2 emissions</Text>
+        <Text>Stacked Bar Chart - CO₂ emissions (per capita)</Text>
         <svg width={width} height={height} ref={svgRef}>
           <g className="x-axis" />
           <g className="y-axis" />

@@ -101,7 +101,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
   return (
     <Container>
       <Flex>
-        <Text>Horizontal BarChart - CO2 emissions</Text>
+        <Text>Horizontal BarChart - CO₂ emissions (per capita)</Text>
         <svg
           ref={svgRef}
           width={width + margin.left + margin.right}

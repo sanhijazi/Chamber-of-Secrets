@@ -168,7 +168,7 @@ const StackedBarChartSmallMultiples = ({
   return (
     <Container>
       <Flex>
-        <Text>Small Multiples - CO₂ Emissions ({selectedDecade}s)</Text>
+        <Text>Small Multiples - CO₂ emissions (per capita)</Text>
         <svg width={width} style={{ 
         overflow: "visible",  // Make overflow visible
         display: "block"      // Ensure proper positioning

@@ -1,25 +1,55 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import * as d3 from "d3";
 import styled from "styled-components";
+import { Dropdown } from "semantic-ui-react";
 
 function Heatmap({ data, width, height, margin }) {
   const svgRef = useRef();
 
+  // Add state for selected decade
+  const [selectedDecade, setSelectedDecade] = useState("2000");
+
+const decades = [
+    { key: "1900s", text: "1900-1909", value: "1900" },
+    { key: "1910s", text: "1910-1919", value: "1910" },
+    { key: "1920s", text: "1920-1929", value: "1920" },
+    { key: "1930s", text: "1930-1939", value: "1930" },
+    { key: "1940s", text: "1940-1949", value: "1940" },
+    { key: "1950s", text: "1950-1959", value: "1950" },
+    { key: "1960s", text: "1960-1969", value: "1960" },
+    { key: "1970s", text: "1970-1979", value: "1970" },
+    { key: "1980s", text: "1980-1989", value: "1980" },
+    { key: "1990s", text: "1990-1999", value: "1990" },
+    { key: "2000s", text: "2000-2009", value: "2000" },
+    { key: "2010s", text: "2010-2019", value: "2010" },
+    { key: "2020s", text: "2020-2029", value: "2020" },
+  ];
+
+  // Update processedData to filter by decade
   const processedData = useMemo(() => {
     if (!data || !data.length) return [];
     
-    console.log("Raw data sample:", data[0]); // Debug first row
+    const decadeStart = parseInt(selectedDecade);
+    const decadeEnd = decadeStart + 9;
+    
     return data
-      .filter(d => d.Year && d.Entity && 
-        !isNaN(d['Annual CO₂ emissions']) && 
-        !isNaN(d['Annual CO₂ emissions from land-use change']))
+      .filter(d => {
+        const year = parseInt(d.Year);
+        return d.Year && 
+          d.Entity && 
+          d.region !== "Unknown" && 
+          !isNaN(d['Annual CO₂ emissions']) && 
+          !isNaN(d['Annual CO₂ emissions from land-use change']) &&
+          year >= decadeStart && 
+          year <= decadeEnd;
+      })
       .map(d => ({
         name: d.Entity,
         fossilEmissions: Math.abs(parseFloat(d['Annual CO₂ emissions']) || 0),
         landUseEmissions: Math.abs(parseFloat(d['Annual CO₂ emissions from land-use change']) || 0),
         year: parseInt(d.Year)
       }));
-  }, [data]);
+  }, [data, selectedDecade]);
 
   // Get latest year data for each country
   const latestData = useMemo(() => {
@@ -32,14 +62,14 @@ function Heatmap({ data, width, height, margin }) {
     return Object.values(dataByCountry);
   }, [processedData]);
 
-  // Get top 20 countries by total emissions
+  // Get top 10 countries by total emissions
   const topCountries = useMemo(() => {
     return latestData
       .sort((a, b) => 
         (b.fossilEmissions + b.landUseEmissions) - 
         (a.fossilEmissions + a.landUseEmissions)
       )
-      .slice(0, 20);
+      .slice(0, 10);
   }, [latestData]);
 
   useEffect(() => {
@@ -52,13 +82,16 @@ function Heatmap({ data, width, height, margin }) {
       return;
     }
 
+    // Adjust height calculation based on fewer countries
+    const adjustedHeight = height * (10/20); // Scale height proportionally
+
     // Clear previous content
     const svgElement = d3.select(svgRef.current);
     svgElement.selectAll("*").remove();
 
     const svg = svgElement
       .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("height", adjustedHeight + margin.top + margin.bottom) // Use adjusted height
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -73,7 +106,7 @@ function Heatmap({ data, width, height, margin }) {
 
     const yScale = d3.scaleBand()
       .domain(topCountries.map(d => d.name))
-      .range([0, height])
+      .range([0, adjustedHeight]) // Use adjusted height
       .padding(0.1);
 
     // Calculate max emission for color scale
@@ -119,7 +152,7 @@ function Heatmap({ data, width, height, margin }) {
     // Add axes
     svg.append("g")
       .attr("class", "x-axis")
-      .attr("transform", `translate(0,${height})`)
+      .attr("transform", `translate(0,${adjustedHeight})`) // Use adjusted height
       .call(d3.axisBottom(xScale));
 
     svg.append("g")
@@ -184,10 +217,21 @@ function Heatmap({ data, width, height, margin }) {
 
   return (
     <Container>
-     <svg style={{
-        overflow: 'visible',
-        display: 'block'
-      }} ref={svgRef}></svg>
+      <Flex>
+        <Text>CO₂ Emissions Heatmap</Text>
+        <Dropdown
+          placeholder="Select Decade"
+          fluid
+          selection
+          options={decades} // Use the same decades array from StackedBarChart
+          onChange={(e, { value }) => setSelectedDecade(value)}
+          value={selectedDecade}
+        />
+        <svg style={{
+          overflow: 'visible',
+          display: 'block'
+        }} ref={svgRef}></svg>
+      </Flex>
     </Container>
   )
 }
@@ -200,6 +244,22 @@ const Container = styled.div`
   align-items: center;
   box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);
   width: 100%;
+`;
+
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const Text = styled.div`
+  color: #000;
+  font-family: Roboto;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 `;
 
 export default Heatmap;

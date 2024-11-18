@@ -204,7 +204,7 @@ const PercentageStacked = ({
   return (
     <Container>
       <Flex>
-        <Text>Percentage Stacked Bar Chart - CO2 emissions</Text>
+        <Text>Percentage Stacked Bar Chart - CO₂ emissions (per capita)</Text>
         <svg width={width} height={height} ref={svgRef} style={{ 
           overflow: "visible",
           display: "block"

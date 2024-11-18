@@ -10,7 +10,7 @@ import StackedBarChart from "./StackedBarChart";
 import Heatmap from "./heatMap";
 import StackedBarChartSmallMultiples from "./StackedBarChartSmallMultiples";
 import PercentegeStacked from "./PercentegeStacked";
-
+import Alluvial from "./Alluvial";
 function App() {
   const [barChartData, setBarChartData] = useState([]);
   const [stackedChartData, setStackedChartData] = useState([]);
@@ -132,6 +132,7 @@ function App() {
         height={height}
         margin={margin}
       />
+      <Alluvial data={heatmapData} />
     </Container>
   );
 }
@@ -142,6 +143,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   background-color: white;
+  padding-bottom: 200px;
   gap: 100px;
 `;
 
