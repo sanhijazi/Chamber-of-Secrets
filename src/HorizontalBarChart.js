@@ -90,7 +90,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
     svg
       .append("g")
       .attr("transform", `translate(${margin.left}, ${height})`)
-      .call(d3.axisBottom(xScale));
+      .call(d3.axisBottom(xScale).tickFormat((d) => `${d} tons CO₂`));
 
     svg
       .append("g")
@@ -102,6 +102,7 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
     <Container>
       <Flex>
         <Text>Horizontal BarChart - CO₂ emissions (per capita)</Text>
+        <Text style={{fontSize: '15px', fontWeight: '300'}}>Visualizing the Leading Contributors by Year - Horizontal BarChart</Text>
         <svg
           ref={svgRef}
           width={width + margin.left + margin.right}
@@ -117,10 +118,15 @@ const HorizontalBarChart = ({ data, width, height, margin }) => {
           onChange={(e) => setYear(e.target.value)}
           type="number"
         />
+        <SubText>Select a year to filter CO₂ emissions data. Data will be displayed for the selected year.</SubText>
       </LeftContainer>
     </Container>
   );
 };
+
+const SubText = styled.div`
+  opacity: 0.5;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -143,7 +149,7 @@ const LeftContainer = styled.div`
   flex-direction: column;
   padding: 20px;
   gap: 30px;
-  height: 140px;
+  min-height: 140px;
   justify-content: center;
   align-items: center;
   width: 300px;
@@ -158,6 +164,7 @@ const Text = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  align-self: flex-start;
 `;
 
 export default HorizontalBarChart;

@@ -101,13 +101,14 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
     svg
       .append("g")
       .attr("transform", `translate(${margin.left}, 10)`)
-      .call(d3.axisLeft(yScale));
+      .call(d3.axisLeft(yScale).tickFormat((d) => `${d} tons CO₂`));
   }, [year, data]);
 
   return (
     <Container>
       <Flex>
-        <Text>BarChart - CO₂ emissions (per capita)</Text>
+        <Text>Top 10 Annual CO₂ Emissions Per Capita</Text>
+        <Text style={{fontSize: '15px', fontWeight: '300'}}>Visualizing the Leading Contributors by Year - BarChart</Text>
         <svg
           ref={svgRef}
           width={width + margin.left + margin.right}
@@ -123,10 +124,16 @@ const VerticalBarChart = ({ data, width, height, margin }) => {
           onChange={(e) => setYear(e.target.value)}
           type="number"
         />
+        <SubText>Select a year to filter CO₂ emissions data. Data will be displayed for the selected year.</SubText>
       </LeftContainer>
     </Container>
   );
 };
+
+
+const SubText = styled.div`
+  opacity: 0.5;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -149,7 +156,7 @@ const LeftContainer = styled.div`
   flex-direction: column;
   padding: 20px;
   gap: 30px;
-  height: 140px;
+  min-height: 140px;
   justify-content: center;
   align-items: center;
   width: 300px;
@@ -164,5 +171,6 @@ const Text = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  align-self: flex-start;
 `;
 export default VerticalBarChart;

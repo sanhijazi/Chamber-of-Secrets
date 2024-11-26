@@ -200,6 +200,7 @@ const decades = [
     <Container>
       <Flex>
         <Text>CO₂ Emissions Heatmap</Text>
+        <Text style={{fontSize: '15px', fontWeight: '300'}}>Visualizing Top Contributors and Aggregate Emissions by Decade</Text>
         <Dropdown
           placeholder="Select Decade"
           fluid

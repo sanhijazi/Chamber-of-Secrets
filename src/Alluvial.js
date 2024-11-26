@@ -87,6 +87,16 @@ const decades = [
   { key: "2020s", text: "2020-2029", value: "2020" },
 ];
 
+const continentColors = {
+  "Africa": "#ff9999",
+  "Asia": "#66b3ff",
+  "Europe": "#99ff99",
+  "North America": "#ffcc99",
+  "Oceania": "#c2c2f0",
+  "South America": "#ffb3e6",
+  "Antarctica": "#d9d9d9"
+};
+
 function Alluvial({ data }) {
   const svgRef = useRef();
   const [selectedYear, setSelectedYear] = useState("2020");
@@ -135,14 +145,16 @@ function Alluvial({ data }) {
           links.push({
             source: `continent-${d.region}`,
             target: `country-${d.Entity}`,
-            value: d['Annual CO₂ emissions including land-use change'] || 0
+            value: d['Annual CO₂ emissions including land-use change'] || 0,
+            color: continentColors[d.region] || '#69b3a2'
           });
 
           if (d['Annual CO₂ emissions'] > 0) {
             links.push({
               source: `country-${d.Entity}`,
               target: 'fossil',
-              value: d['Annual CO₂ emissions'] || 0
+              value: d['Annual CO₂ emissions'] || 0,
+              color: '#ffcc00'
             });
           }
           
@@ -150,7 +162,8 @@ function Alluvial({ data }) {
             links.push({
               source: `country-${d.Entity}`,
               target: 'land',
-              value: d['Annual CO₂ emissions from land-use change'] || 0
+              value: d['Annual CO₂ emissions from land-use change'] || 0,
+              color: '#00ccff'
             });
           }
         }
@@ -190,7 +203,7 @@ function Alluvial({ data }) {
       .join('path')
       .attr('d', sankeyLinkHorizontal())
       .attr('fill', 'none')
-      .attr('stroke', '#a53253')
+      .attr('stroke', d => d.color)
       .attr('stroke-opacity', 0)
       .attr('stroke-width', 0);
 

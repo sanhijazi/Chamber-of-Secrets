@@ -168,7 +168,8 @@ const StackedBarChartSmallMultiples = ({
   return (
     <Container>
       <Flex>
-        <Text>Small Multiples - CO₂ emissions (per capita)</Text>
+        <Text>Small Multiples Analysis of Annual CO₂ Emissions Per Capita</Text>
+        <Text style={{fontSize: '15px', fontWeight: '300'}}>Comparing Top Contributors Across a Decade and Selected Region Using Stacked Bar Charts</Text>
         <svg width={width} style={{ 
         overflow: "visible", 
         display: "block" 
@@ -184,6 +185,7 @@ const StackedBarChartSmallMultiples = ({
           onChange={(e, { value }) => setSelectedRegion(value)}
           value={selectedRegion}
         />
+        <SubText>Select a Region to filter CO₂ emissions data. Data will be displayed for the selected Region.</SubText>
         <Text>Select Decade</Text>
         <Dropdown
           placeholder="Select Decade"
@@ -193,10 +195,15 @@ const StackedBarChartSmallMultiples = ({
           onChange={(e, { value }) => setSelectedDecade(value)}
           value={selectedDecade}
         />
+        <SubText>Select a decade to filter CO₂ emissions data. Data will be displayed for the selected decade's years.</SubText>
       </LeftContainer>
     </Container>
   );
 };
+
+const SubText = styled.div`
+  opacity: 0.5;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -220,7 +227,7 @@ const LeftContainer = styled.div`
   flex-direction: column;
   padding: 20px;
   gap: 20px;
-  height: 220px;
+  min-height: 220px;
   justify-content: center;
   align-items: center;
   width: 300px;
@@ -235,6 +242,7 @@ const Text = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  align-self: flex-start;
 `;
 
 export default StackedBarChartSmallMultiples;
