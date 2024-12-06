@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
-import CSVFILE2 from "./dataset/co2-fossil-plus-land-use.csv";
+import CSVFILE2 from "./dataset/merged_co2_with_density.csv";
 import styled from "styled-components";
 import Nav from "./nav";
 import MapMarcator from "./MapMarcator";
 import MapAzimuthal from "./MapAzimuthal";
+import MapDensity from "./MapDensity";
+import MapDensity2 from "./MapDensity2";
 
 function Section3() {
     const [mapData, setMapData] = useState([]);
@@ -41,6 +43,18 @@ function Section3() {
         margin={margin}
       />
       <MapAzimuthal
+        data={mapData}
+        width={width}
+        height={height}
+        margin={margin}
+      />
+      <MapDensity
+        data={mapData}
+        width={width}
+        height={height}
+        margin={margin}
+      />
+      <MapDensity2
         data={mapData}
         width={width}
         height={height}
