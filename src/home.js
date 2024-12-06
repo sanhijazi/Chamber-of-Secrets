@@ -29,8 +29,8 @@ function Home() {
         </Card>
         <Card>
           <NavLinkStyled to="/Section3">
-            <CardTitle>Section 3</CardTitle>
-            <CardDescription></CardDescription>
+          <CardTitle>Section 3</CardTitle>
+          <CardDescription>Explore CO₂ emissions across the globe with interactive maps. Visualize emissions by country using various map projections and custom visualizations.</CardDescription>
           </NavLinkStyled>
         </Card>
       </BottomSection>
