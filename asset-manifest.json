@@ -1,8 +1,9 @@
 {
   "files": {
     "main.css": "/Chamber-of-Secrets/static/css/main.8fb30e4f.css",
-    "main.js": "/Chamber-of-Secrets/static/js/main.3fca0f36.js",
+    "main.js": "/Chamber-of-Secrets/static/js/main.1b5adcfd.js",
     "static/js/453.ec1520c3.chunk.js": "/Chamber-of-Secrets/static/js/453.ec1520c3.chunk.js",
+    "static/media/merged_co2_with_density.csv": "/Chamber-of-Secrets/static/media/merged_co2_with_density.68a476d4a4fc5615783e.csv",
     "static/media/co2-fossil-plus-land-use.csv": "/Chamber-of-Secrets/static/media/co2-fossil-plus-land-use.134cc6eb066556f6bd18.csv",
     "static/media/DataSetWithRegion.csv": "/Chamber-of-Secrets/static/media/DataSetWithRegion.4960d37e6b4e9d3aef80.csv",
     "static/media/co-emissions-per-capita.csv": "/Chamber-of-Secrets/static/media/co-emissions-per-capita.16effa16f357ba86fb26.csv",
@@ -25,11 +26,11 @@
     "static/media/outline-icons.woff2": "/Chamber-of-Secrets/static/media/outline-icons.687a4990ea22bb1a49d4.woff2",
     "index.html": "/Chamber-of-Secrets/index.html",
     "main.8fb30e4f.css.map": "/Chamber-of-Secrets/static/css/main.8fb30e4f.css.map",
-    "main.3fca0f36.js.map": "/Chamber-of-Secrets/static/js/main.3fca0f36.js.map",
+    "main.1b5adcfd.js.map": "/Chamber-of-Secrets/static/js/main.1b5adcfd.js.map",
     "453.ec1520c3.chunk.js.map": "/Chamber-of-Secrets/static/js/453.ec1520c3.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8fb30e4f.css",
-    "static/js/main.3fca0f36.js"
+    "static/js/main.1b5adcfd.js"
   ]
 }
