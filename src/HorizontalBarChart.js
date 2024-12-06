@@ -131,7 +131,7 @@ const SubText = styled.div`
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 140px 200px;
+  padding: 140px 150px;
   background: #fff;
   align-items: center;
   box-shadow: 0px 0px 19.1px 0px rgba(0, 0, 0, 0.25);

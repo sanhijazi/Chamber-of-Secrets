@@ -28,7 +28,7 @@ function Home() {
           </NavLinkStyled>
         </Card>
         <Card>
-          <NavLinkStyled to="/section3">
+          <NavLinkStyled to="/Section3">
             <CardTitle>Section 3</CardTitle>
             <CardDescription></CardDescription>
           </NavLinkStyled>

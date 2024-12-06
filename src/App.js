@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 function App() {
   return (
     <Container>
-      <RouterProvider router={router} />
+      <RouterProvider future={{ v7_startTransition: true }} router={router} />
     </Container>
   );
 }
