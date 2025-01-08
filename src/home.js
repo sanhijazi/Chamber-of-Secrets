@@ -33,6 +33,15 @@ function Home() {
           <CardDescription>Explore CO₂ emissions across the globe with interactive maps. Visualize emissions by country using various map projections and custom visualizations.</CardDescription>
           </NavLinkStyled>
         </Card>
+        <Card>
+          <NavLinkStyled to="/Section4">
+            <CardTitle>Section 4</CardTitle>
+            <CardDescription>
+              Explore temperature patterns through multiple visualizations: line charts comparing yearly temperatures, 
+              ridgeline plots showing temperature distributions, and radar charts displaying seasonal patterns across states.
+            </CardDescription>
+          </NavLinkStyled>
+        </Card>
       </BottomSection>
     </Container>
     </>

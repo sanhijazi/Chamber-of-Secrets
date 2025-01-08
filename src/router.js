@@ -4,6 +4,7 @@ import Home from './home';
 import Section1 from './Section1';
 import Section2 from './Section2';
 import Section3 from './Section3';
+import Section4 from './Section4';
 
 export const router = createHashRouter(
   [
@@ -22,6 +23,10 @@ export const router = createHashRouter(
     {
       path: '/Section3',
       element: <Section3 />,
+    },
+    {
+      path: '/Section4',
+      element: <Section4 />,
     },
   ],
   {
